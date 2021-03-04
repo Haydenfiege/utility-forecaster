@@ -5,13 +5,15 @@ Created on Tue Mar  2 13:26:03 2021
 @author: JZ2018
 """
 
+
 import time
-#import requests
+import requests
 import pandas as pd
 import datetime
 from re import findall
 from copy import copy
 from random import randint
+
 
 #import functions from source file
 #execfile('D:/JZP/dl_funs.py')
@@ -110,21 +112,23 @@ def dayrange_parse(startdate, enddate):
     print('date range > 30 days, parse into ' + str(len(out_list)) + ' number of downloads')
     return out_list
 
-#input parameters
-tablename = 'DailyAveragePoolPrice'
-startdate = '2015-01-01'
-enddate = '2021-03-31'
-dateformat = '%Y-%m-%d'
-contenttype = 'html'
-#url = aeso_url_gen(tablename, contenttype, startdate, enddate, dateformat)    
-#df = aeso_download_one(url)
-#pd.options.display.max_columns = df.shape[1]
-#df.describe(include='all')
-#dr = aeso_download_range(startdate, enddate, dateformat)
-
-#get table of downloaded data, sort by date
-final_df = aeso_download_range(tablename, contenttype, startdate, enddate, dateformat)
-final_df = final_df.sort_values(by='$/MWh_Date').reset_index()
-final_df.to_csv('D:/JZP/test.csv')
+# =============================================================================
+# #input parameters
+# tablename = 'DailyAveragePoolPrice'
+# startdate = '2015-01-01'
+# enddate = '2021-03-31'
+# dateformat = '%Y-%m-%d'
+# contenttype = 'html'
+# #url = aeso_url_gen(tablename, contenttype, startdate, enddate, dateformat)    
+# #df = aeso_download_one(url)
+# #pd.options.display.max_columns = df.shape[1]
+# #df.describe(include='all')
+# #dr = aeso_download_range(startdate, enddate, dateformat)
+# 
+# #get table of downloaded data, sort by date
+# final_df = aeso_download_range(tablename, contenttype, startdate, enddate, dateformat)
+# final_df = final_df.sort_values(by='$/MWh_Date').reset_index()
+# final_df.to_csv('D:/JZP/test.csv')
+# =============================================================================
 
 
