@@ -16,11 +16,6 @@ start_date = '02282020'
 end_date = '02282021'
 content_type = 'html'
 
-# check if date range is acceptable
-start_date_datatime = datetime.strptime(start_date, '%M%d%Y')
-end_date_datatime = datetime.strptime(end_date, '%M%d%Y')
-time_delta = end_date_datatime - start_date_datatime
-
 # check if date range is acceptable as the AESO site can only generate HTML tables for date ranges <366 days
 start_date_datatime = datetime.strptime(start_date, '%M%d%Y')
 end_date_datatime = datetime.strptime(end_date, '%M%d%Y')
