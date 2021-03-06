@@ -21,8 +21,16 @@ start_date_datatime = datetime.strptime(start_date, '%M%d%Y')
 end_date_datatime = datetime.strptime(end_date, '%M%d%Y')
 time_delta = end_date_datatime - start_date_datatime
 
-#if time_delta >= 366:
-#    return  "Please select a new data range as this report is available for a maximum of 366 days of data"
+# check if date range is acceptable as the AESO site can only generate HTML tables for date ranges <366 days
+start_date_datatime = datetime.strptime(start_date, '%M%d%Y')
+end_date_datatime = datetime.strptime(end_date, '%M%d%Y')
+time_delta = end_date_datatime - start_date_datatime
+
+# error check
+if time_delta >= 366:
+    print("There has been an error in the system.")
+    import sys
+    sys.exit(1)
 
 # URL for web scrape
 url = 'http://ets.aeso.ca/ets_web/ip/Market/Reports/{}?beginDate={}&endDate={}&contentType={}'.format(report_type, start_date, end_date, content_type)
