@@ -2,6 +2,10 @@ pandas
 beautifulsoup4
 requests
 lxml
+matplotlib
+seaborn
+datetime
+jupyter
 ipykernel
 ipython
 ipython-genutils
