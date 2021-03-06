@@ -39,7 +39,7 @@ while year in range(year_start,year_end + 1):
 
         # open a csv with progamatic name
         file_name = 'gc_{}_hourly_weather_{}_{}.csv'.format(city, year, month)
-        file_path = 'data_collection/data/{}'.format(file_name)
+        file_path = 'data_collection/data/weather/historic/{}/{}'.format(city,file_name)
         csv_file = open(file_path, 'wb')
 
         # write to csv and close csv
