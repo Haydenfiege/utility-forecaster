@@ -10,6 +10,8 @@ import pandas as pd
 import requests 
 from datetime import datetime
 
+
+
 # parameters for URL
 report_type = 'HistoricalPoolPriceReportServlet' 
 start_date = '02282020' 
@@ -21,8 +23,8 @@ start_date_datatime = datetime.strptime(start_date, '%M%d%Y')
 end_date_datatime = datetime.strptime(end_date, '%M%d%Y')
 time_delta = end_date_datatime - start_date_datatime
 
-#if time_delta >= 366:
-#    return  "Please select a new data range as this report is available for a maximum of 366 days of data"
+if time_delta >= 366:
+    return  "Please select a new data range as this report is available for a maximum of 366 days of data"
 
 # URL for web scrape
 url = 'http://ets.aeso.ca/ets_web/ip/Market/Reports/{}?beginDate={}&endDate={}&contentType={}'.format(report_type, start_date, end_date, content_type)
