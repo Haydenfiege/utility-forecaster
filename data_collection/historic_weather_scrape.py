@@ -10,17 +10,17 @@ import requests
 
 # dictionary for weather stations IDs
 weather_stations = {
-  "calgary": "50430",
-  "edmonton": "27214",
-  "fort_mac": "49490"
+  "YYC": "50430",
+  "YEG": "27214",
+  "YMM": "49490"
 }
 
 # parms for data export
-city = 'calgary'
-year_start = '2020'
-month_start = "1"
-year_end = '2020'
-month_end = '3'
+city = 'YYC'
+year_start = 2020
+month_start = 1
+year_end = 2020
+month_end = 1
 
 month = month_start
 year = year_start
