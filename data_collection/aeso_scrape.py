@@ -10,6 +10,8 @@ import pandas as pd
 import requests 
 from datetime import datetime
 
+
+
 # parameters for URL
 report_type = 'HistoricalPoolPriceReportServlet' 
 start_date = '02282020' 
@@ -23,7 +25,7 @@ time_delta = end_date_datatime - start_date_datatime
 
 # error check
 if time_delta >= 366:
-    print("There has been an error in the system.")
+    print("Please select a new data range as this report is available for a maximum of 366 days of data")
     import sys
     sys.exit(1)
 
