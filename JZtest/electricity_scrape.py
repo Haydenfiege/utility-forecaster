@@ -45,10 +45,14 @@ def dateconv(mydate, dateformat = None):
 #function to download and pre process dataframe from aeso
 def aeso_download_one(url):
     #get data into pandas df from processed url
-    df = pd.read_html(url)[1]
+    download_raw = pd.read_html(url)
+    df = range_dl_combine(download_raw)
     #flatten multi index column names into single column names
-    cols = df.columns.get_level_values(0)+'_'+df.columns.get_level_values(1)
-    df.columns = cols
+    if len(df.columns.names)>1:
+        cols = df.columns.get_level_values(0)+'_'+df.columns.get_level_values(1)
+        df.columns = cols
+    else:
+        cols = df.columns
     #convert date columns to datetime format
     datecols = [n for n in cols if len(findall('(?i)date', n))>0]
     df[datecols] = df[datecols].apply(pd.to_datetime)
@@ -111,6 +115,26 @@ def dayrange_parse(startdate, enddate):
             break    
     print('date range > 30 days, parse into ' + str(len(out_list)) + ' number of downloads')
     return out_list
+
+
+def range_dl_combine(download_raw):
+    for d in range(0, len(download_raw)):
+        df_rows = download_raw[d].shape[0]
+        if df_rows > 3:
+            tempdf = download_raw[d]
+            if 'combine_df' in locals() or 'combine_df' in globals():
+                combine_df = combine_df.append(tempdf, ignore_index = True)
+            else:
+                combine_df = tempdf
+        else:
+            next
+            
+    output = combine_df.copy()    
+    if 'combine_df' in locals() or 'combine_df' in globals():
+        del combine_df
+        
+    return output
+
 
 # =============================================================================
 # #input parameters
