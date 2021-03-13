@@ -13,7 +13,7 @@ import datetime
 from re import findall
 from copy import copy
 from random import randint
-
+from numpy import where
 
 #import functions from source file
 #execfile('D:/JZP/dl_funs.py')
@@ -55,7 +55,11 @@ def aeso_download_one(url):
         cols = df.columns
     #convert date columns to datetime format
     datecols = [n for n in cols if len(findall('(?i)date', n))>0]
-    df[datecols] = df[datecols].apply(pd.to_datetime)
+    for dc in datecols:
+        #convert hour 24 to hour 00 for pandas to_datetime conversion
+        df[dc] = df[dc].str[:-2]+where(df[dc].str[-2:]=='24', '00', df[dc].str[-2:])
+        #convert column to date time
+        df[dc] = df[dc].apply(pd.to_datetime)
     return df
 
 #function to download data for timerange
