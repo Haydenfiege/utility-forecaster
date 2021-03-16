@@ -49,7 +49,12 @@ def aeso_download_one(url):
     df = range_dl_combine(download_raw)
     #flatten multi index column names into single column names
     if len(df.columns.names)>1:
-        cols = df.columns.get_level_values(0)+'_'+df.columns.get_level_values(1)
+        cols = ''
+        for l in range(0, len(df.columns.names)):
+            if l == 0:
+                cols = df.columns.get_level_values(l)
+            else:
+                cols = cols +'_'+df.columns.get_level_values(l)
         df.columns = cols
     else:
         cols = df.columns
