@@ -10,6 +10,7 @@ import pandas as pd
 import altair as alt
 import datetime
 import urllib
+import plotly.express as px
 
 #@st.cache
 def get_data():
@@ -44,18 +45,19 @@ try:
             )
         )
         
-        chart2 = (
-            alt.Chart(df)
-            .mark_line(opacity=0.5)
-            .encode(
-                x="Date:T",
-                y=alt.Y("AIL Demand (MW):Q", stack=None)
-            )
-        )
+        # chart2 = (
+        #     alt.Chart(df)
+        #     .mark_line(opacity=0.5)
+        #     .encode(
+        #         x="Date:T",
+        #         y=alt.Y("AIL Demand (MW):Q", stack=None)
+        #     )
+        # )
+        chart2 = px.scatter(df, x='Date', y='AIL Demand (MW)')
         st.write('Alberta Electricity Price History')
         st.altair_chart(chart1, use_container_width=True)
         st.write('Alberta Electricity Demand Hsitory')
-        st.altair_chart(chart2, use_container_width=True)
+        st.plotly_chart(chart2, use_container_width=True)
         
 except urllib.error.URLError as e:
     st.error(
