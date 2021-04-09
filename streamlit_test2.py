@@ -12,7 +12,7 @@ import datetime
 import urllib
 import plotly.express as px
 
-#@st.cache
+@st.cache(show_spinner=False)
 def get_data():
     df = pd.read_csv('aeso_hpp.csv')
     if df.columns.values[0] == 'Unnamed: 0':
@@ -25,6 +25,19 @@ try:
     mindate = st.date_input(
        'Plot Start Date', datetime.date(2020,1,1)
     )
+    
+    st.write('Click below to update plot time range')
+    dateupdate = st.button('Update Plot Time Range')
+    
+    st.write('Enter your quoted electricity price below in $/kwh')
+    user_priceinput = st.number_input('Price')
+    st.write(f'Your price is {user_priceinput} $/kwh')
+    
+    st.write('Enter your electricity price lock-in time')
+    user_locktime = st.number_input('Years', format = '%i')
+    user_locktime_int = int(user_locktime)
+    st.write(f'Your quoted price is locked in for {user_locktime_int} years')
+    
     mindate = datetime.datetime.strptime(str(mindate), '%Y-%m-%d')
     if not mindate:
         st.error("Please select start date for plot range")
@@ -32,7 +45,10 @@ try:
         data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
         data.columns.values[1] = 'Date'
         data['Date'] = data['Date'].apply(pd.to_datetime)
-        df = data.loc[data['Date']>=mindate]
+        if dateupdate:
+            df = data.loc[data['Date']>=mindate]
+        else:
+            df = data.loc[data['Date']>=datetime.datetime.strptime('2020-01-01', '%Y-%m-%d')]
         
         st.write("AESO Historical Data", df)
 
