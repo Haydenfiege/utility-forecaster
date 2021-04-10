@@ -11,17 +11,48 @@ import altair as alt
 import datetime
 import urllib
 import plotly.express as px
+from gsheet_fun import *
+from electricity_scrape import *
+#@st.cache
 
-@st.cache(show_spinner=False)
+#d2 = pd.read_csv('aeso_hpp.csv')
+#d2 = d2.drop(d2.columns[0], axis = 1)
+#Gsheet_Append(d2, aeso_hpp_id, sheet_range)
+#aeso_hpp = Gsheet_Download(aeso_hpp_id, sheet_range)
+#aeso_hpp['Date (HE)'] = aeso_hpp['Date (HE)'].apply(pd.to_datetime)
+#dftest = aeso_hpp[0:2]
+#Gsheet_Append(dftest, aeso_hpp_id, sheet_range)
+
 def get_data():
-    df = pd.read_csv('aeso_hpp.csv')
-    if df.columns.values[0] == 'Unnamed: 0':
-        df.columns.values[0] = 'RowID'
+    #df = pd.read_csv('aeso_hpp.csv')
+    # here enter the id of your google sheet
+    aeso_hpp_id = '1sRkTyY8jlv-NGizn-0ulBSIgIjQmVvpBVnofy49-NPM'
+    #weather_daily_id = '1niPYt8HCYKWLFqnJbSv-7p-kuk9qheIx-igeL5hIy0s'
+    #weather_hourly_id = '1k_41_j8CpYeGDNdRWRlIyx_2cx58ROp-6bQ3RcFZidg'
+    sheet_range = 'A1:AA1000000'
+    df = Gsheet_Download(aeso_hpp_id, sheet_range)
+    df['Date (HE)'] = df['Date (HE)'].apply(pd.to_datetime)
+    num_cols = ['Price ($)', '30Ravg ($)', 'AIL Demand (MW)']
+    df[num_cols] = df[num_cols].apply(pd.to_numeric)
+    # if df.columns.values[0] == 'Unnamed: 0':
+    #     df.columns.values[0] = 'RowID'
+    # else:
+    #     df['RowID'] = df.index+1
     return df
 
 try:
     data = get_data()
-        
+
+    maxdate = max(data['Date (HE)'])
+    currdate = datetime.datetime.now()
+    if maxdate < currdate:
+        append_data = aeso_download_range('HistoricalPoolPrice', 'html', str(maxdate)[:10], str(currdate)[:10], '%Y-%m-%d')
+        data = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
+    data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
+    data = data.rename(columns={'Date (HE)':'Date'})
+    #data['Date'] = data['Date'].apply(pd.to_datetime)
+    
+    st.write('current datetime '+str(datetime.datetime.now()))    
     mindate = st.date_input(
        'Plot Start Date', datetime.date(2020,1,1)
     )
@@ -39,12 +70,10 @@ try:
     st.write(f'Your quoted price is locked in for {user_locktime_int} years')
     
     mindate = datetime.datetime.strptime(str(mindate), '%Y-%m-%d')
+    
     if not mindate:
         st.error("Please select start date for plot range")
     else:
-        data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
-        data.columns.values[1] = 'Date'
-        data['Date'] = data['Date'].apply(pd.to_datetime)
         if dateupdate:
             df = data.loc[data['Date']>=mindate]
         else:
@@ -70,6 +99,7 @@ try:
         #     )
         # )
         chart2 = px.scatter(df, x='Date', y='AIL Demand (MW)')
+        
         st.write('Alberta Electricity Price History')
         st.altair_chart(chart1, use_container_width=True)
         st.write('Alberta Electricity Demand Hsitory')

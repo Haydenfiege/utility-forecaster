@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr  7 22:08:23 2021
+Created on Fri Apr  9 15:37:42 2021
 
 @author: JZ2018
 """
@@ -12,7 +12,10 @@ from google.auth.transport.requests import Request
 import os
 import pickle
 
-def main(sheet_id, sheet_range):
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+
+def Gsheet_main(sheet_id, sheet_range):
     global values_input, service
     creds = None
     if os.path.exists('token.pickle'):
@@ -23,7 +26,7 @@ def main(sheet_id, sheet_range):
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'dk.json', SCOPES) # here enter the name of your downloaded JSON file
+                'dk_id.json', SCOPES) # here enter the name of your downloaded JSON file
             creds = flow.run_local_server(port=0)
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
@@ -38,7 +41,8 @@ def main(sheet_id, sheet_range):
 
     if not values_input and not values_expansion:
         print('No data found.')
-        
+
+
 def Create_Service(client_secret_file, api_service_name, api_version, *scopes):
     global service
     SCOPES = [scope for scope in scopes[0]]
@@ -78,3 +82,13 @@ def Export_Data_To_Sheets(df, gsheetId, sheet_range):
             values=df.T.reset_index().T.values.tolist()[1:])
     ).execute()
     print('Sheet successfully Updated')
+    
+def Gsheet_Append(df, sheetid, sheet_range):
+    Create_Service('dk_id.json', 'sheets', 'v4',['https://www.googleapis.com/auth/spreadsheets'])
+    #dfnew = aeso_hpp[0:3]
+    Export_Data_To_Sheets(df, sheetid, sheet_range)
+    
+def Gsheet_Download(sheet_id, sheet_range):
+    Gsheet_main(sheet_id, sheet_range)
+    df_output = pd.DataFrame(values_input[1:], columns=values_input[0])
+    return df_output
