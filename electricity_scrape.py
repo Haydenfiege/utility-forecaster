@@ -106,7 +106,7 @@ def aeso_download_range(tablename, contenttype, startdate, enddate, dateformat):
             print(str(range_start) + 'downloaded')
             sleeptime = randint(3,9)
             print('sleep for ' + str(sleeptime) + ' seconds')
-            time.sleep(sleeptime)
+            #time.sleep(sleeptime)
         
     return combine_df
 

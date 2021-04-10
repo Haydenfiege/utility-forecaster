@@ -12,7 +12,7 @@ import datetime
 import urllib
 import plotly.express as px
 from gsheet_fun import *
-#from electricity_scrape import *
+from electricity_scrape import *
 #@st.cache
 
 #d2 = pd.read_csv('aeso_hpp.csv')
@@ -41,13 +41,14 @@ def get_data():
     return df
 
 try:
-    data = get_data()
+    #data = get_data()
 
     # maxdate = max(data['Date (HE)'])
     # currdate = datetime.datetime.now()
     # if maxdate < currdate:
     #     append_data = aeso_download_range('HistoricalPoolPrice', 'html', str(maxdate)[:10], str(currdate)[:10], '%Y-%m-%d')
     #     data = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
+    data = aeso_download_range('HistoricalPoolPrice', 'html', '2021-01-01', '2021-03-01', '%Y-%m-%d')
     data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
     data = data.rename(columns={'Date (HE)':'Date'})
     #data['Date'] = data['Date'].apply(pd.to_datetime)
