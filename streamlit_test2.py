@@ -46,6 +46,9 @@ def check_newdata(data):
     dateformat = '%Y-%m-%d'
     if maxdate < currdate:
         append_data = aeso_download_range('HistoricalPoolPrice', 'html',  maxdate.strftime(dateformat),  currdate.strftime(dateformat), dateformat)
+        append_data['Date (HE)'] = append_data['Date (HE)'].apply(pd.to_datetime)
+        num_cols = ['Price ($)', '30Ravg ($)', 'AIL Demand (MW)']
+        append_data[num_cols] = append_data[num_cols].apply(pd.to_numeric)
         data2 = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
     else:
         data2 = data.copy()
