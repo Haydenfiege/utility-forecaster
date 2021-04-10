@@ -40,15 +40,21 @@ def get_data():
     #     df['RowID'] = df.index+1
     return df
 
-try:
-    #data = get_data()
+def check_newdata(data):
+    maxdate = max(data['Date (HE)'])
+    currdate = datetime.datetime.now()
+    dateformat = '%Y-%m-%d'
+    if maxdate < currdate:
+        append_data = aeso_download_range('HistoricalPoolPrice', 'html',  maxdate.strftime(dateformat),  currdate.strftime(dateformat), dateformat)
+        data2 = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
+    else:
+        data2 = data.copy()
+    return data2
 
-    # maxdate = max(data['Date (HE)'])
-    # currdate = datetime.datetime.now()
-    # if maxdate < currdate:
-    #     append_data = aeso_download_range('HistoricalPoolPrice', 'html', str(maxdate)[:10], str(currdate)[:10], '%Y-%m-%d')
-    #     data = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
-    data = aeso_download_range('HistoricalPoolPrice', 'html', '2021-01-01', '2021-03-01', '%Y-%m-%d')
+try:
+    data_gsheet = get_data()
+    data = check_newdata(data_gsheet)
+    
     data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
     data = data.rename(columns={'Date (HE)':'Date'})
     #data['Date'] = data['Date'].apply(pd.to_datetime)
