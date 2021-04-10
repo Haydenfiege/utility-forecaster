@@ -92,3 +92,16 @@ def Gsheet_Download(sheet_id, sheet_range):
     Gsheet_main(sheet_id, sheet_range)
     df_output = pd.DataFrame(values_input[1:], columns=values_input[0])
     return df_output
+
+def Gsheet_updateAll(df, sheet_id, sheet_range):
+    Create_Service('dk_id.json', 'sheets', 'v4',['https://www.googleapis.com/auth/spreadsheets'])
+    service.spreadsheets().values().clear(spreadsheetId=sheet_id,range=sheet_range).execute()
+    service.spreadsheets().values().append(
+        spreadsheetId=sheet_id,
+        valueInputOption='RAW',
+        range=sheet_range,
+        body=dict(
+            majorDimension='ROWS',
+            values=df.T.reset_index().T.values.tolist())
+    ).execute()
+    print('Sheet successfully cleared and replaced')

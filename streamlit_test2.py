@@ -23,13 +23,13 @@ from electricity_scrape import *
 #dftest = aeso_hpp[0:2]
 #Gsheet_Append(dftest, aeso_hpp_id, sheet_range)
 
-def get_data():
+def get_data(sheet_id, sheet_range):
     #df = pd.read_csv('aeso_hpp.csv')
     # here enter the id of your google sheet
-    aeso_hpp_id = '1sRkTyY8jlv-NGizn-0ulBSIgIjQmVvpBVnofy49-NPM'
+    #aeso_hpp_id = '1sRkTyY8jlv-NGizn-0ulBSIgIjQmVvpBVnofy49-NPM'
     #weather_daily_id = '1niPYt8HCYKWLFqnJbSv-7p-kuk9qheIx-igeL5hIy0s'
     #weather_hourly_id = '1k_41_j8CpYeGDNdRWRlIyx_2cx58ROp-6bQ3RcFZidg'
-    sheet_range = 'A1:AA1000000'
+    #sheet_range = 'A1:AA1000000'
     df = Gsheet_Download(aeso_hpp_id, sheet_range)
     df['Date (HE)'] = df['Date (HE)'].apply(pd.to_datetime)
     num_cols = ['Price ($)', '30Ravg ($)', 'AIL Demand (MW)']
@@ -40,7 +40,7 @@ def get_data():
     #     df['RowID'] = df.index+1
     return df
 
-def check_newdata(data):
+def append_newdata(data, sheetid, sheet_range):
     maxdate = max(data['Date (HE)'])
     currdate = datetime.datetime.now()
     dateformat = '%Y-%m-%d'
@@ -50,14 +50,21 @@ def check_newdata(data):
         num_cols = ['Price ($)', '30Ravg ($)', 'AIL Demand (MW)']
         append_data[num_cols] = append_data[num_cols].apply(pd.to_numeric, errors='coerce')
         data2 = data.append(append_data).reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
+        upload_data = append_data.applymap(str)
+        #Gsheet_Append(upload_data, sheetid, sheet_range)
+        Gsheet_updateAll(data2.applymap(str), sheetid, sheet_range)
+        print(str(upload_data.shape[0]) + ' rows added to google sheet data')
+        
     else:
         data2 = data.copy()
     return data2
 
 try:
-    data_gsheet = get_data()
-    data = check_newdata(data_gsheet)
-    
+    aeso_hpp_id = '1sRkTyY8jlv-NGizn-0ulBSIgIjQmVvpBVnofy49-NPM'
+    sheet_range = 'A1:AA1000000'
+    data_gsheet = get_data(aeso_hpp_id, sheet_range)
+    data_new = append_newdata(data_gsheet, aeso_hpp_id, sheet_range)
+    data = data_new.reset_index(drop=True).drop_duplicates().sort_values('Date (HE)')
     data['Electricity Price $/kwh'] = data['Price ($)'] / 1000
     data = data.rename(columns={'Date (HE)':'Date'})
     #data['Date'] = data['Date'].apply(pd.to_datetime)
@@ -70,14 +77,15 @@ try:
     st.write('Click below to update plot time range')
     dateupdate = st.button('Update Plot Time Range')
     
-    st.write('Enter your quoted electricity price below in $/kwh')
-    user_priceinput = st.number_input('Price')
-    st.write(f'Your price is {user_priceinput} $/kwh')
+    st.sidebar.write('Enter your quoted electricity price below in $/kwh')
+    user_priceinput = st.sidebar.number_input('Price')
+    st.sidebar.write(f'Your price is {user_priceinput} $/kwh')
     
-    st.write('Enter your electricity price lock-in time')
-    user_locktime = st.number_input('Years', format = '%i')
+    st.sidebar.write('Enter your electricity price lock-in time')
+    #user_locktime = st.number_input('Years', format = '%i')
+    user_locktime = st.sidebar.slider('Years', 0, 5, 1)
     user_locktime_int = int(user_locktime)
-    st.write(f'Your quoted price is locked in for {user_locktime_int} years')
+    st.sidebar.write(f'Your quoted price is locked in for {user_locktime_int} years')
     
     mindate = datetime.datetime.strptime(str(mindate), '%Y-%m-%d')
     
